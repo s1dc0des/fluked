@@ -16,4 +16,4 @@ Fluked, a game made on flutter
 </p>
 
 # Sidharth Yadav
-# flutteryfi@gmail.com
+# sidharthdyadav@gmail.com
