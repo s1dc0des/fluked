@@ -7,7 +7,7 @@ Fluked, a game made on flutter
 <p align="center">
   <img src="/screenshots/iPhoneinit.png" width="200" alt="iPhone start">
   <img src="/screenshots/iPhonewon.png" width="200" alt="iPhone won">
-  <img src="/screenshots/iPhoneloss.png" width="200" alt="iPhone retry">
+  <img src="/screenshots/iPhonelost.png" width="200" alt="iPhone retry">
 </p>
 <p align="center">
   <img src="/screenshots/androidinit.jpg" width="200" alt="android start">
