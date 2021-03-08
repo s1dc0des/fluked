@@ -1,30 +1,66 @@
 import 'dart:async';
 
+import 'package:fluked/constants/constants.dart';
 import 'package:fluked/cubit/fluked_cubit.dart';
+import 'package:fluked/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:vibration/vibration.dart';
+import 'package:intl/intl.dart';
+import 'package:timer_builder/timer_builder.dart';
 
 class MyHomePage extends StatefulWidget {
   @override
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
+  LocalStorage _localStorage = LocalStorage();
+  // final String currentTime = getSystemTime();
+
+  // String getSystemTime() {
+  //   var now = DateTime.now();
+  //   return DateFormat("H:m:s").format(now);
+  // }
+
   @override
   void initState() {
     super.initState();
   }
 
+  void vibrate() async {
+    if (await Vibration.hasCustomVibrationsSupport()) {
+      Vibration.vibrate(duration: 200);
+      await Future.delayed(Duration(milliseconds: 100));
+      Vibration.vibrate(duration: 300);
+    }
+  }
+
+  void vibrateSmall() async {
+    if (await Vibration.hasCustomVibrationsSupport()) {
+      Vibration.vibrate(duration: 50);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: independence,
       appBar: AppBar(
-        title: Text("Fluked"),
+        title: Text(
+          "Fluked",
+          style: TextStyle(color: honeyYellow, fontSize: 22),
+        ),
         centerTitle: true,
+        backgroundColor: jet,
       ),
       body: Center(
         child: BlocConsumer<FlukedCubit, FlukedResult>(
-          listener: (context, state) {},
+          listener: (context, state) {
+            if (state.won) {
+              vibrate();
+            } else {}
+          },
           builder: (context, state) {
             final Size size = MediaQuery.of(context).size;
 
@@ -36,19 +72,46 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Padding(
                       padding: const EdgeInsets.all(12.0),
                       child: Card(
-                        color: Colors.blueGrey,
+                        color: jet,
                         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                         child: Center(
-                            child: Padding(
-                          padding: const EdgeInsets.all(100.0),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Text(state.won ? "Won" : "Lost"),
-                              Text(state.totalAttempts.toString()),
-                              Text(state.totalwinnings.toString()),
-                            ],
-                          ),
+                            child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(12.0),
+                              child: Text(
+                                "Total attempts = ${state.totalAttempts.toString()}",
+                                style: TextStyle(fontSize: 12, color: mangnolla),
+                              ),
+                            ),
+                            Text(
+                              "Total Fluked = ${state.totalwinnings.toString()}",
+                              style: TextStyle(fontSize: 22, color: mangnolla),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(22.0),
+                              child: TimerBuilder.periodic(Duration(seconds: 1), builder: (context) {
+                                DateTime now = DateTime.now();
+                                String time = DateFormat("H:m:").format(now);
+                                String timeseconds = DateFormat("s").format(now);
+
+                                return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Text(
+                                      "$time",
+                                      style: TextStyle(color: mangnolla, fontSize: 40, fontWeight: FontWeight.w700),
+                                    ),
+                                    Text(
+                                      "$timeseconds",
+                                      style: TextStyle(color: honeyYellow, fontSize: 40, fontWeight: FontWeight.w700),
+                                    ),
+                                  ],
+                                );
+                              }),
+                            ),
+                          ],
                         )),
                       ),
                     )),
@@ -62,13 +125,37 @@ class _MyHomePageState extends State<MyHomePage> {
                         GestureDetector(
                           onTap: () {
                             BlocProvider.of<FlukedCubit>(context).checkWinner();
+                            vibrateSmall();
                           },
                           child: Card(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            color: Colors.green,
+                            color: jet,
                             child: Container(
                               width: size.width / 2 - 24,
-                              child: Center(child: Text("Press me")),
+                              child: Center(
+                                  child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  if (!state.won) ...[
+                                    Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Icon(
+                                        Icons.refresh,
+                                        size: 30,
+                                        color: mangnolla,
+                                      ),
+                                    ),
+                                    Text(
+                                      "Try again",
+                                    ),
+                                  ],
+                                  if (state.won) ...[
+                                    Text(
+                                      "You won !!!",
+                                    )
+                                  ]
+                                ],
+                              )),
                             ),
                           ),
                         ),
@@ -79,7 +166,11 @@ class _MyHomePageState extends State<MyHomePage> {
                             color: Colors.amber,
                             child: Container(
                               width: size.width / 2 - 24,
-                              child: Center(child: Text(state.random.toString())),
+                              child: Center(
+                                  child: Text(
+                                state.random.toString(),
+                                style: TextStyle(color: jet, fontSize: 40),
+                              )),
                             ),
                           ),
                         )

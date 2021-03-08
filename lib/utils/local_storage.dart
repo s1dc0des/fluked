@@ -20,6 +20,7 @@ class LocalStorage {
   }
 
   getTotalwins<int>() {
+    print(preferences.containsKey('totalwins'));
     if (preferences.containsKey('totalwins')) {
       return preferences.getInt("totalwins");
     } else {
@@ -29,7 +30,8 @@ class LocalStorage {
 
   increaseWinning() {
     int previousWins = getTotalwins();
-    preferences.setInt('totalWins', previousWins + 1);
+    print("total wins are $previousWins");
+    preferences.setInt('totalwins', previousWins + 1);
   }
 
   getTotalAttempts<int>() {
