@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fluked/constants/constants.dart';
 import 'package:fluked/cubit/fluked_cubit.dart';
+import 'package:fluked/repository/app_data_repository.dart';
 import 'package:fluked/utils/local_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,14 +16,6 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateMixin {
-  LocalStorage _localStorage = LocalStorage();
-  // final String currentTime = getSystemTime();
-
-  // String getSystemTime() {
-  //   var now = DateTime.now();
-  //   return DateFormat("H:m:s").format(now);
-  // }
-
   @override
   void initState() {
     super.initState();
@@ -63,7 +56,6 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
           },
           builder: (context, state) {
             final Size size = MediaQuery.of(context).size;
-
             return Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
@@ -81,20 +73,20 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                             Padding(
                               padding: const EdgeInsets.all(12.0),
                               child: Text(
-                                "Total attempts = ${state.totalAttempts.toString()}",
+                                "Total attempts = ${RepositoryProvider.of<UserDataRepository>(context).getAppData().totalAttempts}",
                                 style: TextStyle(fontSize: 12, color: mangnolla),
                               ),
                             ),
                             Text(
-                              "Total Fluked = ${state.totalwinnings.toString()}",
+                              "Total Fluked = ${RepositoryProvider.of<UserDataRepository>(context).getAppData().totalFluked}",
                               style: TextStyle(fontSize: 22, color: mangnolla),
                             ),
                             Padding(
                               padding: const EdgeInsets.all(22.0),
                               child: TimerBuilder.periodic(Duration(seconds: 1), builder: (context) {
                                 DateTime now = DateTime.now();
-                                String time = DateFormat("H:m:").format(now);
-                                String timeseconds = DateFormat("s").format(now);
+                                String time = DateFormat("HH:mm:").format(now);
+                                String timeseconds = DateFormat("ss").format(now);
 
                                 return Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -136,7 +128,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                   child: Column(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  if (!state.won) ...[
+                                  if (!state.won && !state.initialdata) ...[
                                     Padding(
                                       padding: const EdgeInsets.all(5.0),
                                       child: Icon(
@@ -149,7 +141,18 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                                       "Try again",
                                     ),
                                   ],
+                                  if (state.initialdata) ...[
+                                    Text(
+                                      "Tap here",
+                                    ),
+                                  ],
                                   if (state.won) ...[
+                                    Padding(
+                                      padding: const EdgeInsets.all(5.0),
+                                      child: Text(
+                                        "${RepositoryProvider.of<UserDataRepository>(context).getAppData().totalFluked}",
+                                      ),
+                                    ),
                                     Text(
                                       "You won !!!",
                                     )
@@ -163,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> with SingleTickerProviderStateM
                           onTap: () {},
                           child: Card(
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                            color: Colors.amber,
+                            color: honeyYellow,
                             child: Container(
                               width: size.width / 2 - 24,
                               child: Center(

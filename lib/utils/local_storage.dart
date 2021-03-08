@@ -19,7 +19,7 @@ class LocalStorage {
     preferences.remove(keyname);
   }
 
-  getTotalwins<int>() {
+  getTotalFluked<int>() {
     print(preferences.containsKey('totalwins'));
     if (preferences.containsKey('totalwins')) {
       return preferences.getInt("totalwins");
@@ -28,8 +28,8 @@ class LocalStorage {
     }
   }
 
-  increaseWinning() {
-    int previousWins = getTotalwins();
+  increaseFluked() {
+    int previousWins = getTotalFluked();
     print("total wins are $previousWins");
     preferences.setInt('totalwins', previousWins + 1);
   }

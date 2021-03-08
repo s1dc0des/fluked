@@ -7,12 +7,7 @@ part 'fluked_state.dart';
 
 class FlukedCubit extends Cubit<FlukedResult> {
   LocalStorage _localStorage = LocalStorage();
-  FlukedCubit()
-      : super(FlukedResult(
-            random: 0,
-            totalAttempts: LocalStorage().getTotalAttempts(),
-            totalwinnings: LocalStorage().getTotalwins(),
-            won: false));
+  FlukedCubit() : super(FlukedResult(random: 0, initialdata: true, won: false));
 
   void checkWinner() async {
     _localStorage.increaseAttempts();
@@ -21,18 +16,16 @@ class FlukedCubit extends Cubit<FlukedResult> {
     print("is $random = $secondsNow  ???");
     print(random == secondsNow);
     if (random == secondsNow) {
-      await _localStorage.increaseWinning();
+      await _localStorage.increaseFluked();
       emit(FlukedResult(
         random: random,
-        totalAttempts: _localStorage.getTotalAttempts(),
-        totalwinnings: _localStorage.getTotalwins(),
+        initialdata: false,
         won: true,
       ));
     } else {
       emit(FlukedResult(
         random: random,
-        totalAttempts: _localStorage.getTotalAttempts(),
-        totalwinnings: _localStorage.getTotalwins(),
+        initialdata: false,
         won: false,
       ));
     }
